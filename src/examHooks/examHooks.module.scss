@@ -1,11 +1,47 @@
 .wrapper{
     text-align: center;
     justify-content: center;
+    display: inline-flex;
 }
 
-.table, th, td{
+th, td{
     border: solid 1px #ccc;
 }
 thead{
     background-color: bisque;
+}
+
+Table{
+    width: 700px;
+}
+
+ul{
+    display: inline-flex;
+    gap: 10px;
+}
+
+li{
+    list-style: none;
+    padding: 0 10px;
+    background-color: #eec1c1;
+    border-radius: 8px;
+}
+li:hover{
+    cursor: pointer;
+    background-color: #bcd4d2;
+}
+
+select{
+    margin-left: 15px;
+    margin-bottom: 10px;
+}
+
+.filter{
+    display: block;
+    padding: 15px;
+    background-color:rgb(152, 243, 196);
+}
+
+.active{
+    background-color: #e3ecec;
 }

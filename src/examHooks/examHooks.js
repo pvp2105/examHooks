@@ -1,5 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./examHooks.module.scss";
+import Table from "../component/table";
+import Filter from "../component/filter";
 
 const ExamHooks = () => {
   const [students, setStudents] = useState([
@@ -108,62 +110,92 @@ const ExamHooks = () => {
   const [studentsFilted, setStudentsFilted] = useState(students);
 
   const [selectedGender, setSelectedGender] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [valueName, setValueName] = useState("");
+
   const handleGenderChange = (event) => {
     setSelectedGender(event.target.value);
   };
+  const handleClassChange = (event) => {
+    setSelectedClass(event.target.value);
+  };
+  const handleNameValue = (event) => {
+    setValueName(event.target.value);
+  };
   useEffect(() => {
-    if (selectedGender !== "") {
-      setStudentsFilted(
-        students.filter((student) => student.gender === selectedGender)
-        //filter trên bản gốc
-      );
-    } else {
-      setStudentsFilted(students);
-    }
-  }, [selectedGender]);
+    const isAllGender = selectedGender === "";
+    const isAllClass = selectedClass === "";
+    const isAllName = valueName === "";
+    setStudentsFilted(
+      students.filter((student) => {
+        //students.filter: filter trên bản gốc
+        const lowerStudentName = student.name.toLowerCase();
+        const lowerValueName = valueName.toLowerCase();
+        return (
+          (isAllGender && isAllClass && isAllName) ||
+          (student.gender === selectedGender && isAllClass && isAllName) ||
+          (isAllGender && student.class === selectedClass && isAllName) ||
+          (isAllGender &&
+            isAllClass &&
+            lowerStudentName.includes(lowerValueName)) ||
+          (isAllGender &&
+            student.class === selectedClass &&
+            lowerStudentName.includes(lowerValueName)) ||
+          (student.gender === selectedGender &&
+            isAllClass &&
+            lowerStudentName.includes(lowerValueName)) ||
+          (student.gender === selectedGender &&
+            student.class === selectedClass &&
+            isAllName) ||
+          (student.gender === selectedGender &&
+            student.class === selectedClass &&
+            lowerStudentName.includes(lowerValueName))
+        );
+      })
+    );
+  }, [selectedGender, selectedClass, valueName]);
 
   // const memoValue = useMemo(() => {
-  //   if (selectedGender !== "")
-  //     return students.filter((student) => student.gender === selectedGender);
-  //   else return students;
-  // }, [selectedGender]);
+  //   const newData = [...students];
+  //   const isAllGender = selectedGender === "";
+  //   const isAllClass = selectedClass === "";
+  //   return newData.filter((item) => {
+  //     return (
+  //       (isAllGender && isAllClass && isAllName) ||
+  // (student.gender === selectedGender && isAllClass && isAllName) ||
+  // (isAllGender && student.class === selectedClass && isAllName) ||
+  // (isAllGender &&
+  //   isAllClass &&
+  //   lowerStudentName.includes(lowerValueName)) ||
+  // (isAllGender &&
+  //   student.class === selectedClass &&
+  //   lowerStudentName.includes(lowerValueName)) ||
+  // (student.gender === selectedGender &&
+  //   isAllClass &&
+  //   lowerStudentName.includes(lowerValueName)) ||
+  // (student.gender === selectedGender &&
+  //   student.class === selectedClass &&
+  //   isAllName) ||
+  // (student.gender === selectedGender &&
+  //   student.class === selectedClass &&
+  //   lowerStudentName.includes(lowerValueName))
+  //     );
+  //   });
+  // }, [selectedGender, selectedClass]);
 
   return (
     <div className={styles["wrapper"]}>
-      <table className={styles["table"]}>
-        <thead>
-          <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Tên</th>
-            <th scope="col">Lớp</th>
-            <th scope="col">Giới tính</th>
-            <th scope="col">Năm sinh</th>
-            <th scope="col">Họ tên cha</th>
-            <th scope="col">Họ tên mẹ</th>
-            <th scope="col">Quê quán</th>
-          </tr>
-        </thead>
-        <tbody>
-          {studentsFilted.map((student) => (
-            <tr key={student.id}>
-              <td>{student.id}</td>
-              <td>{student.name}</td>
-              <td>{student.gender}</td>
-              <td>{student.class}</td>
-              <td>{student.yearOfBirth}</td>
-              <td>{student.fatherName}</td>
-              <td>{student.motherName}</td>
-              <td>{student.hometown}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <label>Chọn theo </label>
-      <select value={selectedGender} onChange={handleGenderChange}>
-        <option value="">Giới tính</option>
-        <option value="Nam">Nam</option>
-        <option value="Nữ">Nữ</option>
-      </select>
+      <div className={styles["table"]}>
+        <Table studentsFilted={studentsFilted} />
+      </div>
+      <Filter
+        handleGenderChange={handleGenderChange}
+        handleClassChange={handleClassChange}
+        handleNameValue={handleNameValue}
+        selectedGender={selectedGender}
+        selectedClass={selectedClass}
+        valueName={valueName}
+      />
     </div>
   );
 };
